@@ -1,1 +1,1 @@
-# CK_Hotel
+# Luxury Hotel
