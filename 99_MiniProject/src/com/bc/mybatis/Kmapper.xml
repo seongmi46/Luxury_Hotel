@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mini_project">
+
+	<!-- 전체 회원 목록 조회 -->
+	<select id="list" resultType="com.bc.controller.K.CustomerVO">
+		SELECT * FROM CUSTOMER ORDER BY CUST_NAME
+	</select>
+	<!-- 회원가입정보저장 sql-->
+	<insert id="insert" parameterType="com.bc.controller.K.CustomerVO">
+		INSERT INTO CUSTOMER
+		       					(CUST_NO,CUST_NAME,CUST_ID,CUST_PWD,CUST_PHONE,CUST_EMAIL,CUST_BIRTH)
+		VALUES ((SELECT NVL(MAX(CUST_NO),0)+1 FROM CUSTOMER), #{cust_name},#{cust_id}, #{cust_pwd}, #{cust_phone}, #{cust_email},
+		       TO_DATE(#{cust_birth}, 'yyyymmdd'))
+	</insert>
+	<!-- 로그인 -->
+	<select id="login" parameterType="map" resultType="int">
+		SELECT count(*)
+		FROM CUSTOMER
+		WHERE CUST_ID = #{cust_id} AND CUST_PWD = #{cust_pwd}
+	</select>
+	
+	<!-- 아이디 찾기 -->
+	<select id="userFindId" resultType="string" parameterType="map">
+		SELECT CUST_ID 
+		FROM CUSTOMER 
+		WHERE CUST_NAME = #{cust_name} AND CUST_PHONE= #{cust_phone}
+	</select>
+	
+	<!-- 비밀번호 찾기 -->
+	<select id="userFindPwd" resultType="String" parameterType="map">
+		SELECT CUST_PWD 
+		FROM CUSTOMER 
+		WHERE CUST_NAME = #{cust_name} AND CUST_ID = #{cust_id} AND CUST_PHONE = #{cust_phone}
+	</select>
+	
+	
+	<!-- 아이디 중복확인 -->
+	<select id="idCheck" parameterType="string" resultType="int">
+		SELECT NVL(COUNT(*), 0) 
+		FROM CUSTOMER
+		WHERE CUST_ID = #{cust_id}
+	</select>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

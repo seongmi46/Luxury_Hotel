@@ -1,0 +1,39 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@700&display=swap');
+.hotelTitle {
+	font-family: 'Fira Code', monospace;
+}
+.myfont{
+		font-family: '나눔고딕',NanumGothic,'맑은고딕',MalgunGothic,'돋움',Dotum,Helvetica,sans-serif;
+}
+</style>
+<!-- Navigation -->
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-warning fixed-top myfont">
+  <div class="container">
+  <a class="navbar-brand hotelTitle" href="reserveMain.jsp">Luxury Hotel</a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#">예약</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">AA</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">력셔리호텔 소개</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">고객문의</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">AA</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

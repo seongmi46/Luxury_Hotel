@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="qna">
+	<!-- select 태그 3개 속성 id, resultType, parameterType
+	id : 사용할 명칭(필수항목), 현재 Mapper에서 유일한 이름사용
+	resultType : 조회 결과 값을 저장하기 위한 데이터 타입
+		(데이터 하나에 대한 타입 지정)
+	parameterType : 전달받은 파라미터 데이터 타입 지정(선택적)
+	-->
+	<select id="all" resultType="com.bc.qna.QnaVO">
+		SELECT q.QNA_NO, c.CUST_NAME, q.QNA_TITLE, q.QNA_CONTENT, q.QNA_PWD
+		FROM QNA q, CUSTOMER c
+		WHERE q.CUST_NO = c.CUST_NO
+	</select>
+	
+	<select id="one" parameterType="string" resultType="com.bc.qna.QnaVO">
+		SELECT q.QNA_NO, q.CUST_NO, q.QNA_TITLE, q.QNA_CONTENT,q.CUST_PHONE, c.CUST_NAME, c.CUST_EMAIL
+		FROM QNA q, CUSTOMER c
+		WHERE q.CUST_NO = c.CUST_NO AND Q.QNA_NO = #{qna_no}
+	</select>
+	
+	<insert id="insert" parameterType="com.bc.qna.QnaVO">
+		INSERT INTO QNA
+               (QNA_NO, QNA_TYPE, CUST_NO, QNA_TITLE, QNA_CONTENT, CUST_PHONE, QNA_PWD)
+        VALUES (QNA_SEQ.NEXTVAL, #{qna_type}, #{cust_no}, #{qna_title}, #{qna_content}, #{cust_phone}, #{qna_pwd})
+	</insert>
+	
+	<update id="update" parameterType="com.bc.qna.QnaVO" >
+		UPDATE QNA
+		SET CUST_NO = #{cust_no},
+		    QNA_TITLE = #{qna_title},
+		    QNA_CONTENT = #{qna_content},
+		    QNA_PWD = #{qna_pwd}
+		WHERE QNA_NO = #{qna_no}
+	</update>
+
+	<delete id="delete" parameterType="string">
+		DELETE FROM QNA WHERE QNA_NO = #{qna_no}
+	</delete>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

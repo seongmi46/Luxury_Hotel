@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hotels">
+<!-- 성미 -->
+	<!-- 전체 룸 개수 조회 -->
+	<select id="totalCount" resultType="int" parameterType="String">
+		SELECT COUNT(*) 
+		  FROM ROOM 
+		 WHERE HOTEL_NO = #{hotel_no}
+	</select>
+	
+	<!-- 페이지에 표시할 게시글 조회 
+		parameterType="Map" : begin, end 값 전달 용도
+		key-value 형태의 Map 사용 바인드변수명이 key가 됨-->
+	<select id="list" resultType="com.bc.hotel.vo.HotelVO"
+			parameterType="Map">
+		 SELECT *
+  		   FROM (SELECT ROWNUM R_NUM, ROOM.*
+          		   FROM ROOM
+         		  WHERE HOTEL_NO = #{hotel_no}     
+           			AND ROOM_STOCK > ${reserveRoom}      
+           			AND ROOM_PEOPLE >= ${people}
+           			AND ROOM_SPA = NVL(${spa},0)
+           			AND ROOM_COOKING = NVL(${cooking},0)
+           			AND ROOM_SMOKING= NVL(${smoking},0))
+		  WHERE R_NUM BETWEEN #{begin } AND #{end}    
+		  ORDER BY R_NUM
+	</select>
+	
+	
+	<!-- 모든 방 조회 -->
+	<select id="allRoom" resultType="com.bc.hotel.vo.HotelVO">
+		SELECT * FROM ROOM ORDER BY ROOM_NO
+	</select>
+	
+	<!-- 모든 호텔 조회 -->
+	<select id="allHotel" resultType="com.bc.hotel.vo.HotelVO">
+		SELECT * FROM HOTEL ORDER BY HOTEL_NO
+	</select>
+	
+	<!-- 모든 호텔&방 조회 -->
+	<select id="allHotelRoom" resultType="com.bc.hotel.vo.HotelVO">
+		SELECT *
+		  FROM HOTEL H, ROOM R
+		 WHERE h.hotel_no = r.hotel_no
+	</select>
+	
+	<!-- 호텔이름으로 조회 -->
+	<select id="hotelInfoName" resultType="com.bc.hotel.vo.HotelVO"
+		parameterType="String">
+		SELECT *
+		  FROM HOTEL
+		 WHERE hotel_name = #{hotel_name}
+	</select>
+	
+	<!-- 호텔넘버로 조회 -->
+	<select id="hotelInfoNo" resultType="com.bc.hotel.vo.HotelVO"
+		parameterType="String">
+		SELECT *
+		  FROM HOTEL
+		 WHERE hotel_name = #{hotel_no}
+	</select>
+	
+	<!-- 호텔 룸 갯수 조회 -->
+	<select id="hotelRoomCount" resultType="int" parameterType="String">
+		SELECT COUNT(*)
+		  FROM ROOM
+		 WHERE HOTEL_NO = #{hotel_no}
+	</select>
+	
+	<!-- 해당 날짜에 해당 객실에 예약된 수 구하기 -->
+	<select id="reserveRoomCount" resultType="int" parameterType="map">
+	SELECT count(*)
+	  FROM RESERVE S, HOTEL H, ROOM R
+	 WHERE S.HOTEL_NO = H.HOTEL_NO
+	   AND H.HOTEL_NO = R.HOTEL_NO
+	   AND S.REV_ROOM_NO = R.ROOM_NO
+	   AND S.REV_NO IN(SELECT REV_NO FROM RESERVE WHERE REV_EXIST = '1')
+	   AND H.HOTEL_NO = ${hotel_no}
+	   AND R.ROOM_NO = ${room_no}
+	   AND TO_DATE(${inDate},'yyyy-mm-dd') = S.REV_IN
+	</select>	
+	
+	<!-- 해당날짜에 예약가능한 룸 조회 -->
+	<select id="reservePossibleRoom" resultType="com.bc.hotel.vo.HotelVO"
+		parameterType="map">
+		SELECT *
+		  FROM ROOM
+		 WHERE ROOM_NO = ${room_no}
+		   AND HOTEL_NO = ${hotel_no}
+		   AND ROOM_STOCK > ${reserveRoom}
+		   AND ROOM_PEOPLE >= ${people}
+		   AND ROOM_SPA = ${spa}
+		   AND ROOM_COOKING = ${cooking}
+		   AND ROOM_SMOKING = ${smoking}
+	</select>
+	
+	<!-- 호텔이름으로 호텔넘버 가져오기 -->
+	<select id="getHotelNo" resultType="String" parameterType="String">
+		SELECT HOTEL_NO
+		  FROM HOTEL
+		 WHERE HOTEL_NAME= #{hotel_name}		
+	</select>
+	
+	
+	<!-- 방 가격 가져오기 -->
+	<select id="getRoomPrice" resultType="int" parameterType="map">
+		SELECT ROOM_PRICE
+		  FROM ROOM
+		 WHERE HOTEL_NO = ${hotel_no}
+		   AND ROOM_NO = ${room_no}
+	</select>
+	
+	
+	<!-- 회원 넘버 가져오기 -->
+	<select id="getNo" resultType="int" parameterType="String">
+		SELECT CUST_NO
+		  FROM CUSTOMER
+		 WHERE CUST_ID = #{cust_id}
+	</select>
+
+	<!-- 호텔이름&방번호로 방 정보 가져오기 -->
+	<select id="roomInfo" resultType="com.bc.hotel.vo.HotelVO" parameterType="map">
+		SELECT *
+		  FROM ROOM 
+		 WHERE HOTEL_NO = ${hotel_no}
+		   AND ROOM_NO = ${room_no}
+	</select>
+	
+
+	<!-- 예약 정보 인서트  -->
+ 	<insert id="revInsert" parameterType="com.bc.hotel.vo.ReserveVO"> 
+  		INSERT INTO RESERVE 
+			   (REV_NO, HOTEL_NO, CUST_NO, REV_ROOM_NO, REV_IN, REV_OUT, 
+			   					REV_PRICE, REV_NAME, REV_PHONE, REV_EMAIL, REV_PEOPLE)
+		VALUES ((SELECT NVL(MAX(REV_NO),0)+1 FROM RESERVE), #{hotel_no}, #{cust_no}, #{rev_room_no}, TO_DATE(#{rev_in}, 'YYYYMMDD'), TO_DATE(#{rev_out}, 'YYYYMMDD'), 
+								#{rev_price}, #{rev_name}, #{rev_phone}, #{rev_email}, #{rev_people})
+		  
+
+	</insert>  
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

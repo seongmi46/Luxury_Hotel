@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MINI_PROJECT">
+
+	<!-- 회원조회 페이징 -->
+	<select id="list1" resultType="int">
+		SELECT COUNT(*) FROM CUSTOMER
+	</select>
+	
+	<select id="list2" resultType="com.bc.model.vo.CustomerVO"
+			parameterType="Map">
+		SELECT *
+		  FROM (SELECT ROWNUM R_NUM, CUST.*
+		          FROM (SELECT *
+		                  FROM CUSTOMER
+		                 ORDER BY CUST_NO DESC
+		               ) CUST
+		        )
+		 WHERE R_NUM BETWEEN #{begin} AND #{end}
+	</select>
+	
+	<!-- 이름/번호로 회원 조회 -->
+	<select id="search" parameterType="map" 
+			resultType="com.bc.model.vo.CustomerVO">
+		SELECT *
+		  FROM CUSTOMER
+		<choose>
+			<when test="idx == 0">
+				WHERE CUST_NAME LIKE '%'||#{keyword}||'%'
+			</when>
+			<when test="idx == 1">
+				WHERE CUST_NO LIKE '%'||#{keyword}||'%'
+			</when>
+		</choose>
+		ORDER BY CUST_NO
+	</select>
+	
+	<select id="search0" parameterType="String" 
+			resultType="com.bc.model.vo.CustomerVO">
+		SELECT *
+		  FROM CUSTOMER
+		 WHERE CUST_NAME = #{keyword}
+	</select>
+	<select id="search1" parameterType="String" 
+			resultType="com.bc.model.vo.CustomerVO">
+		SELECT *
+		  FROM CUSTOMER
+		 WHERE CUST_NO = #{keyword}
+	</select>
+	
+	<!-- 회원 수정/탈퇴 하기전 조회 -->
+	<select id="modify" resultType="com.bc.model.vo.CustomerVO" parameterType="String">
+		SELECT * FROM CUSTOMER WHERE CUST_NO = #{cust_no}
+	</select>
+	<!-- 회원정보 수정/탈퇴 -->
+	<update id="listupdate" parameterType="com.bc.model.vo.CustomerVO">
+		UPDATE CUSTOMER 
+		SET CUST_NAME = #{cust_name}
+		  , CUST_ID = #{cust_id}
+		  , CUST_PWD = #{cust_pwd}
+		  , CUST_PHONE = #{cust_phone}
+		  , CUST_EMAIL= #{cust_email} 
+		  , CUST_BIRTH = TO_DATE(#{cust_birth}, 'yyyy-mm-dd')
+		WHERE CUST_NO = #{cust_no}
+	</update>
+	
+	<update id='listdelete' parameterType="int">
+		UPDATE CUSTOMER
+		SET CUST_EXIST = 0
+		WHERE CUST_NO = #{cust_no}
+	</update>
+
+	
+	
+	
+	
+	
+	
+	
+	
+	<!-- 예약조회 페이징 -->
+	<select id="list3" resultType="int">
+		SELECT COUNT(*) FROM RESERVE
+	</select>
+	
+	<select id="list4" resultType="com.bc.model.vo.ReserveVO"
+			parameterType="Map">
+		SELECT *
+		  FROM (SELECT ROWNUM R_NUM, REV.*
+		          FROM (SELECT *
+		                  FROM RESERVE
+		                 ORDER BY REV_NO DESC
+		               ) REV
+		        )
+		 WHERE R_NUM BETWEEN #{begin} AND #{end}
+	</select>
+	
+	<!-- 예약/회원 번호로 조회 -->
+	<select id="searchRS" parameterType="map" 
+			resultType="com.bc.model.vo.ReserveVO">
+		SELECT *
+		  FROM RESERVE
+		<choose>
+			<when test="idx == 2">
+				WHERE REV_NO LIKE '%'||#{keyword}||'%'
+			</when>
+			<when test="idx == 3">
+				WHERE CUST_NO LIKE '%'||#{keyword}||'%'
+			</when>
+		</choose>
+		ORDER BY REV_NO
+	</select>
+	
+	<select id="search2" parameterType="String" 
+			resultType="com.bc.model.vo.ReserveVO">
+		SELECT *
+		  FROM RESERVE
+		 WHERE REV_NO = #{keyword}
+	</select>
+	<select id="search3" parameterType="String" 
+			resultType="com.bc.model.vo.ReserveVO">
+		SELECT *
+		  FROM RESERVE
+		 WHERE CUST_NO = #{keyword}
+	</select>
+	<!-- 예약 수정/취소 하기전 조회 -->
+	<select id="modify1" resultType="com.bc.model.vo.ReserveVO" parameterType="String">
+		SELECT * FROM RESERVE WHERE REV_NO = #{rev_no}
+	</select>
+	<!-- 예약내역 수정/취소 -->
+	<update id="reserveupdate" parameterType="com.bc.model.vo.ReserveVO">
+		UPDATE RESERVE
+		SET REV_NO = #{rev_no}
+		  , HOTEL_NO = #{hotel_no}
+		  , CUST_NO = #{cust_no}
+		  , REV_ROOM_NO = #{rev_room_no}
+		  , REV_IN= TO_DATE(#{rev_in}, 'yyyy-mm-dd') 
+		  , REV_OUT = TO_DATE(#{rev_out}, 'yyyy-mm-dd')
+		  , REV_PRICE = #{rev_price}
+		  , REV_EXIST = #{rev_exist}
+		  , REV_NAME = #{rev_name}
+		  , REV_EMAIL = #{rev_email}
+		  , REV_PHONE = #{rev_phone}
+		WHERE REV_NO = #{rev_no}
+	</update>
+	
+	<update id='reservedelete' parameterType="int">
+		UPDATE RESERVE
+		SET REV_EXIST = 0
+		WHERE REV_NO = #{rev_no}
+	</update>
+	
+
+
+
+	
+	<!-- 호텔조회 페이징 -->
+	<select id="list5" resultType="int">
+		SELECT COUNT(*) FROM HOTEL
+	</select>
+	
+	<select id="list6" resultType="com.bc.model.vo.HotelVO"
+			parameterType="Map">
+		SELECT *
+		  FROM (SELECT ROWNUM R_NUM, HOTEL.*
+		          FROM (SELECT *
+		                  FROM HOTEL
+		                 ORDER BY HOTEL_NO DESC
+		               ) HOTEL
+		        )
+		 WHERE R_NUM BETWEEN #{begin} AND #{end}
+	</select>
+	
+	<!-- 호텔 추가 -->
+	<insert id="hotelinsert" parameterType="com.bc.model.vo.HotelVO">
+		INSERT INTO HOTEL (HOTEL_NO, HOTEL_NAME, HOTEL_TEL, HOTEL_ADDR, HOTEL_IMAGE)
+		VALUES ((SELECT NVL(MAX(HOTEL_NO),0)+1 FROM HOTEL), #{hotel_name}, #{hotel_tel}, #{hotel_addr}, #{hotel_image})
+	</insert>
+
+
+
+
+
+
+
+	<!-- 호텔 룸 조회 -->
+	<select id="list7" resultType="int">
+		SELECT COUNT(*) FROM ROOM
+	</select>
+	
+	<select id="list8" resultType="com.bc.model.vo.RoomVO"
+			parameterType="Map">
+		SELECT *
+		  FROM (SELECT ROWNUM R_NUM, ROOM.*
+		          FROM (SELECT *
+		                  FROM ROOM
+		                 ORDER BY ROOM_NO DESC
+		               ) ROOM
+		        )
+		 WHERE R_NUM BETWEEN #{begin} AND #{end}
+	</select>
+	<!-- 방/호텔 번호로 룸 조회 -->
+	<select id="hmsearch" parameterType="String" 
+		resultType="com.bc.model.vo.RoomVO">
+	SELECT *
+	  FROM ROOM
+			WHERE HOTEL_NO = #{HOTEL_NO}
+		ORDER BY HOTEL_NO
+	</select>
+	
+	
+	
+	
+	
+	
+	<!-- Q&A 조회 -->
+	<select id="qnalist" resultType="com.bc.model.vo.QnA_VO">
+		SELECT * FROM QNA ORDER BY QNA_NO
+	</select>
+
+	<!-- QnA 페이징 -->
+	<select id="list9" resultType="int">
+		SELECT COUNT(*) FROM QNA
+	</select>
+	<!-- QnA 리스트 -->
+	<select id="list10" resultType="com.bc.model.vo.QnA_VO"
+			parameterType="Map">
+		SELECT *
+		  FROM (SELECT ROWNUM R_NUM, QNA.*
+		          FROM (SELECT *
+		                  FROM QNA
+		                 ORDER BY QNA_NO DESC
+		               ) QNA
+		        )
+		 WHERE R_NUM BETWEEN #{begin} AND #{end}
+	</select>
+	
+	
+	
+	
+	
+	<!-- qna 예약/회원 번호로 조회 -->
+	<select id="qnasearch" parameterType="map" 
+			resultType="com.bc.model.vo.QnA_VO">
+		SELECT *
+		  FROM QNA
+		<choose>
+			<when test="idx == 4">
+				WHERE QNA_NO LIKE '%'||#{keyword}||'%'
+			</when>
+			<when test="idx == 5">
+				WHERE CUST_NO LIKE '%'||#{keyword}||'%'
+			</when>
+		</choose>
+		ORDER BY QNA_NO
+	</select>
+	
+	<select id="search4" parameterType="String" 
+			resultType="com.bc.model.vo.QnA_VO">
+		SELECT *
+		  FROM QNA
+		 WHERE QNA_NO = #{keyword}
+	</select>
+	<select id="search5" parameterType="String" 
+			resultType="com.bc.model.vo.QnA_VO">
+		SELECT *
+		  FROM QNA
+		 WHERE CUST_NO = #{keyword}
+	</select>
+	<!-- 게시글 하나 상세 조회 -->
+		<select id="selectone" resultType="com.bc.model.vo.QnA_VO">
+		SELECT * FROM QNA 
+		WHERE QNA_NO = #{qna_no}
+		ORDER BY QNA_NO
+	</select>
+	<!-- 답변 추가  -->
+	<insert id="qna_ans_write" parameterType="com.bc.model.vo.QnA_AnsVO">
+		INSERT INTO QNA_ANS (ANS_NO, QNA_NO, CUST_NO,ANS_CONTENT)
+		VALUES ((SELECT NVL(MAX(ANS_NO),0)+1 FROM QNA_ANS),#{qna_no}, #{cust_no}, #{ans_content})
+	</insert>
+	<!-- 답변 보기  -->
+	<select id="ansview" resultType="com.bc.model.vo.QnA_AnsVO" parameterType="int">
+		SELECT * FROM QNA_ANS WHERE QNA_NO = #{qna_no}
+		ORDER BY QNA_NO
+	</select>
+	<!-- 답변삭제 -->
+	<delete id="qna_ans_delete" parameterType="com.bc.model.vo.QnA_AnsVO">
+		DELETE FROM QNA_ANS WHERE QNA_NO = #{qna_no}
+	</delete>
+</mapper>

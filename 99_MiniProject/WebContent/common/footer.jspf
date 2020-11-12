@@ -1,0 +1,31 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+/* footer 영역 */
+footer{
+    width: 1200px; /*헤더와 같은 사이즈*/
+    height: 90px;
+    margin-top: 20px;
+    text-align: center;
+    background-color: #f1f1f1;
+    font-family: Georgia, "맑은 고딕", serif;
+    font-size: 13px;
+}
+footer a{ color: red;}
+ 
+</style>
+</head>
+<body>
+<footer>
+	<p>서울시 서초구 강남대로 459 (서초동, 백암빌딩)｜ 사업자등록번호 : 199-29-29395<br>
+	    (주) 호텔 대표이사 : 김경난 김래영 최성미 최정혁 / 문의 : 02-3486-9600 / 팩스 : 02-6007-1245<br>
+	    통신판매업 신고번호 : 제 서초-00098호 / 개인정보보호관리책임자 : 김경난 김래영 최성미 최정혁<br>
+	    Copyright (c) 호텔 All rights reserved.</p>
+</footer>
+</body>
+</html>

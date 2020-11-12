@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="hotel">
+
+
+	<!-- 아이디로 회원번호를 받아오는 맵퍼 -->
+	<select id="idtono" resultType="String">
+		SELECT CUST_NO FROM CUSTOMER
+		WHERE CUST_ID = #{cust_id}
+	</select>
+	
+	
+	
+
+	<!-- ************** 개인정보 관련 ************** -->
+	<!-- 개인정보조회 -->
+	<!-- 나중에 아이디 값 받아서 조회하는걸로 바꿔야댐 -->
+	<select id="myInfo" resultType="com.bc.model.Rvo.CustomerVO">
+		SELECT * FROM CUSTOMER 
+		WHERE CUST_NO = #{cust_no}
+	</select>
+	
+	<!-- 개인정보수정 --> 
+	<update id="updateMyInfo" parameterType="com.bc.model.Rvo.CustomerVO">
+		UPDATE CUSTOMER
+		   SET CUST_PWD = #{cust_pwd},
+		       CUST_PHONE = #{cust_phone},
+		       CUST_EMAIL = #{cust_email}
+		WHERE CUST_NO = #{cust_no}   
+	</update>
+	
+	<!-- 회원탈퇴 -->
+	<update id="deleteMe" parameterType="string">
+		UPDATE CUSTOMER 
+		   SET CUST_EXIST = 0
+		 WHERE CUST_NO = #{cust_no}
+	</update>
+	
+	
+	<!-- ************** 예약내역 관련 ************** -->
+	<!-- 내 예약내역 개수 조회 -->
+	<select id="totalCount" resultType="int"> <!-- count가 숫자니까 int로 받음 -->
+		SELECT COUNT(*) FROM RESERVE WHERE CUST_NO = #{cust_no}
+	</select>
+	
+	
+	
+	<!-- 예약 다 받아오는 셀렉트문 -->
+	<select id="bookinglist" resultType="com.bc.model.Rvo.ReserveVO" parameterType="Map">
+	SELECT * FROM (
+	SELECT ROWNUM R_NUM, BOOKING.* FROM (        
+	SELECT R.REV_NO, R.REV_NAME, H.HOTEL_NAME, R.REV_ROOM_NO, R.REV_IN, R.REV_OUT, R.REV_PRICE, R.REV_EXIST   
+	FROM RESERVE R, HOTEL H
+        WHERE R.HOTEL_NO = H.HOTEL_NO
+          AND R.CUST_NO = #{cust_no}
+        ORDER BY REV_IN DESC) BOOKING)
+        WHERE R_NUM BETWEEN #{begin} AND #{end}
+	</select>
+	
+	
+	
+	
+	<!-- 예약내역 상세보기 -->
+	<!-- 파라미터 타입 (나중에) 회원번호로, 예약번호) -->
+	<select id="bookingone" resultType="com.bc.model.Rvo.ReserveVO" parameterType="Map">
+		SELECT R.REV_NO, R.REV_NAME, H.HOTEL_NAME, R.REV_ROOM_NO, R.REV_IN, R.REV_OUT, R.REV_PRICE, R.REV_EXIST, R.REV_EMAIL, R.REV_PHONE  
+	FROM RESERVE R, HOTEL H
+        WHERE R.HOTEL_NO = H.HOTEL_NO
+          AND R.CUST_NO = #{cust_no}
+          AND R.REV_NO = #{rev_no}
+        ORDER BY REV_IN DESC
+	</select>
+	
+	<!-- 예약자 정보 변경 -->
+	<update id="updatebooking" parameterType="com.bc.model.Rvo.ReserveVO">
+		UPDATE RESERVE 
+		   SET REV_NAME = #{rev_name},
+		       REV_EMAIL = #{rev_email},
+		       REV_PHONE = #{rev_phone}
+		 WHERE REV_NO = #{rev_no}
+	</update>
+	
+	<!-- 예약 취소 -->
+	<update id="cancelbooking" parameterType="string">
+		UPDATE RESERVE
+		   SET REV_EXIST = 0
+		 WHERE REV_NO = #{rev_no}
+	</update>
+	
+	
+	<!-- ************** 내 문의내역 관련 ************** -->
+	<!-- 내 문의글 개수 조회 -->
+	<select id="qnacount" resultType="int"> <!-- count가 숫자니까 int로 받음 -->
+		SELECT COUNT(*) FROM QNA WHERE CUST_NO = #{cust_no}
+	</select>
+	
+	<!-- 내 문의내역 리스트로 조회 -->
+	<select id="qnalist" resultType="com.bc.model.Rvo.QnaVO" parameterType="Map">
+	SELECT * FROM (
+	SELECT ROWNUM R_NUM, QNALIST.* 
+	FROM (  SELECT Q.QNA_NO, Q.QNA_TYPE, C.CUST_NAME, QNA_TITLE
+	        FROM QNA Q, CUSTOMER C
+	        WHERE Q.CUST_NO = C.CUST_NO
+	        AND Q.CUST_NO = #{cust_no}
+	        ORDER BY Q.QNA_NO DESC) QNALIST)
+	WHERE R_NUM BETWEEN #{begin} AND #{end}
+	</select>
+	
+	<!-- 내 문의글 상세보기 > 여기에는 달린 댓글 확인도 가능해야됨 -->
+	<select id="qnadetail" resultType="com.bc.model.Rvo.QnaVO" parameterType="Map">
+	SELECT Q.QNA_NO, Q.QNA_TYPE, C.CUST_NAME, Q.QNA_TITLE, Q.QNA_CONTENT 
+	FROM QNA Q, CUSTOMER C
+	WHERE Q.CUST_NO = C.CUST_NO
+	AND Q.CUST_NO = #{cust_no}
+	AND Q.QNA_NO = #{qna_no}
+	ORDER BY Q.QNA_NO
+	</select>
+
+	
+	<!-- 내 문의내역에 달린 댓글 보여주기 -->
+	<select id="commlist" resultType="com.bc.model.Rvo.QnaAnsVO" parameterType="string">
+		SELECT *
+		FROM QNA_ANS
+		WHERE QNA_NO = #{qna_no}
+	</select>
+	
+	<!-- 내 문의글 수정하기 -->
+	<update id="qnamodify" parameterType="com.bc.model.Rvo.QnaVO">
+		UPDATE QNA
+		   SET QNA_TITLE = #{qna_title},
+		       QNA_CONTENT = #{qna_content},
+		       QNA_TYPE = #{qna_type},
+		       CUST_PHONE = #{cust_phone}
+		WHERE QNA_NO = #{qna_no} 
+	</update>
+	
+	<!-- 내 문의글 삭제하기 -->
+	<delete id="qnadelete" parameterType="string">
+		DELETE FROM QNA WHERE QNA_NO = #{qna_no}
+	</delete>
+	
+	
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

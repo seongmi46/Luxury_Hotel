@@ -1,0 +1,65 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@700&display=swap');
+.hotelTitle {
+	font-family: 'Fira Code', monospace;
+
+}
+.myfont{
+		font-family: '나눔고딕',NanumGothic,'맑은고딕',MalgunGothic,'돋움',Dotum,Helvetica,sans-serif;
+}
+</style>
+<%System.out.println("navBar id : " + session.getAttribute("cust_id")); %>
+
+<!-- Navigation -->
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-warning fixed-top myfont">
+  <div class="container">
+  <a class="navbar-brand hotelTitle" href="../S/reserveMain.jsp"> CK Hotel </a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="nav navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="../S/reserveMain.jsp">예약</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="../S/introduceHotel.jsp">CK호텔 소개</a>
+        </li>
+        <li class="nav-item">
+       	
+		<% 
+		if(session.getAttribute("cust_id") == null){%>
+			<a class="nav-link" href="../K/login.jsp">로그인</a>
+		<%
+		} else if(session.getAttribute("cust_id") != null){ %>
+		 	<a class="nav-link" href="../K/logout.jsp">로그아웃</a>
+
+		<% 	
+		}%>
+		</li>
+		
+		
+        <li class="dropdown nav-item">
+          <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+          	<img src="../images/myPage1.png" width="20px" height="20px"><span class="caret"></span></a>
+          <ul class="dropdown-menu">
+          <% if("manager".equals(session.getAttribute("cust_id"))){%>
+          		<li><a href="../J/index.jsp">관리자메뉴</a></li>
+          <% } else if(session.getAttribute("cust_id") != null){%>
+          		<li><a href="../R/MyPage?type=select&opt=0">개인정보조회</a></li>
+          		<li><a href="../R/MyPage?type=select&opt=1">예약내역</a></li>
+          		<li><a href="../R/MyPage?type=select&opt=2">문의내역</a></li>
+          <% } else { %>
+          		<li><a href="../K/login.jsp">로그인해주세요</a></li>
+          <% } %>
+          </ul>
+        </li>
+        
+        
+        
+      </ul>
+    </div>
+  </div>
+</nav>
